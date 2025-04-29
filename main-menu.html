@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RTU Order System - Main Menu</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Garet', Arial, sans-serif;
+            background: url('rtu.png') no-repeat center center fixed;
+            background-size: cover;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        .header, .footer {
+            background: rgba(255, 255, 0, 0.7);
+            padding: 15px;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+            height: 50px;
+        }
+        .logo-container {
+            display: flex;
+            align-items: center;
+            height: 100%;
+        }
+        .logo {
+            height: 30px;
+            width: auto;
+            margin-right: 5px;
+        }
+        .logo-container span {
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .main-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .main-menu-title {
+            color: white;
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 40px;
+            font-size: 32px;
+        }
+        .menu-options {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 50px;
+            width: 100%;
+            max-width: 800px;
+        }
+        .menu-option {
+            background: rgba(255, 255, 0, 0.8);
+            padding: 15px 20px;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 24px;
+            text-align: center;
+            cursor: pointer;
+            border: 3px solid black;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            width: 250px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 16px;
+        }
+        #date-time {
+            font-weight: bold;
+        }
+        .logout-btn {
+            background: none;
+            border: none;
+            color: black;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo-container">
+            <img src="Logo.jpg" style="mix-blend-mode: multiply;" alt="RTU Logo" class="logo">
+            <span>Rizal Technological University</span>
+        </div>
+        <button class="logout-btn" onclick="logout()">LOGOUT</button>
+    </div>
+
+    <div class="main-content">
+        <div class="main-menu-title">
+            MAIN MENU
+        </div>
+        <div class="menu-options">
+            <div class="menu-option" onclick="goToUniform()">
+                UNIFORM
+            </div>
+            <div class="menu-option" onclick="goToBook()">
+                BOOK
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <div>ORDER SYSTEM</div>
+        <div id="date-time"></div>
+    </div>
+
+    <script>
+        window.onload = function() {
+            updateDateTime();
+            setInterval(updateDateTime, 1000);
+        };
+
+        function updateDateTime() {
+            var now = new Date();
+            var date = (now.getMonth() + 1) + '/' + now.getDate() + '/' + now.getFullYear();
+            var hours = now.getHours();
+            var minutes = now.getMinutes();
+            var ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12;
+            hours = hours ? hours : 12;
+            minutes = minutes < 10 ? '0' + minutes : minutes;
+            var time = hours + ':' + minutes + ' ' + ampm;
+            document.getElementById('date-time').innerHTML = date + ' | ' + time;
+        }
+
+        function logout() {
+            localStorage.removeItem('studentName');
+            window.location.href = 'index.html';
+        }
+
+        function goToUniform() {
+            window.location.href = 'uniform.html';
+        }
+
+        function goToBook() {
+            window.location.href = 'books.html';
+        }
+    </script>
+</body>
+</html>

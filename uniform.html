@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RTU Order System - Uniform Ordering</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Garet', Arial, sans-serif;
+            background: url('rtu.png') no-repeat center center fixed;
+            background-size: cover;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        .header, .footer {
+            background: rgba(255, 255, 0, 0.7);
+            padding: 15px;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+            height: 50px;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            height: 100%;
+        }
+
+        .logo {
+            height: 30px;
+            width: auto;
+            margin-right: 5px;
+        }
+
+        .logo-container span {
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .main-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            margin-top: 0px;
+        }
+
+        .main-menu-title {
+            color: white;
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 0px;
+            font-size: 32px;
+        }
+
+        .uniform-list {
+            margin-top: 0px;
+            margin-left: -615px;
+        }
+
+        .uniforms-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            padding: 5px 20px 20px 20px;
+            justify-items: center;
+            align-items: start;
+            width: 100%;
+            max-height: 600px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #888 #f1f1f1;
+            margin-top: 0;
+        }
+
+        .uniform-item {
+            border: 1px solid #ccc;
+            padding: 20px;
+            background: white;
+            text-align: center;
+            width: 270px;
+            height: 400px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .uniform-item img {
+            width: 170px;
+            height: 160px;
+            object-fit: cover;
+            margin-bottom: 15px;
+        }
+
+        .uniform-item h3 {
+            font-size: 12px;
+            font-weight: bold;
+            color: #333;
+            text-transform: uppercase;
+            text-align: center;
+        }
+
+        .uniform-item p, .quantity-container {
+            margin: 2px 0;
+            font-size: 14px;
+        }
+
+        .uniform-item input {
+            width: 60px;
+            text-align: center;
+            background-color: lightgray;
+            border: 1px solid black;
+            border-radius: 5px;
+            padding: 3px;
+        }
+
+        .quantity-btn-container {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            width: 100%;
+            margin-top: 5px;
+        }
+
+        .add-btn {
+            background: black;
+            color: white;
+            padding: 8px 30px;
+            font-size: 14px;
+            font-weight: bold;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        .order-summary {
+            position: fixed;
+            right: 2px;
+            top: 53%;
+            transform: translateY(-50%);
+            width: 600px;
+            height: 590px;
+            padding: 15px;
+            left: 905px;
+            background: white;
+            border: 2px solid lightgray;
+            border-radius: 10px;
+            box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            margin: 0;
+        }
+
+        .order-row {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            justify-content: flex-start;
+            margin-top: 10px;
+        }
+
+        .order-row label {
+            font-weight: bold;
+            white-space: nowrap;
+            margin-left: 20px;
+        }
+
+        .order-row input {
+            width: 25%;
+            padding: 5px;
+            border: 2px solid gray;
+            border-radius: 5px;
+            font-size: 12px;
+        }
+
+        .footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            background: rgba(255, 255, 0, 0.7);
+            width: 100%;
+            height: 50px;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 16px;
+            font-weight: bold;
+            margin-top: 100px;
+        }
+
+        #date-time {
+            font-weight: bold;
+        }
+
+        .logout-btn {
+            background: none;
+            border: none;
+            color: black;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo-container">
+            <img src="Logo.jpg" style="mix-blend-mode: multiply;" alt="RTU Logo" class="logo">
+            <span>Rizal Technological University</span>
+        </div>
+        <button class="logout-btn" onclick="logout()">LOGOUT</button>
+    </div>
+
+    <div class="main-content">
+        <div class="main-menu-title">
+            UNIFORM ORDERING
+        </div>
+
+        <div class="container uniform-list">
+            <div class="uniforms-container"></div>
+        </div>
+
+        <div class="order-summary">
+            <div style="display: flex; justify-content: space-between; padding: 10px 10px;">
+                <h2 style="margin: 0; font-size: 25px; color: black; padding: 10px;">
+                    ORDER SUMMARY
+                </h2>
+                <button onclick="goBack()" style="background: black; color: white; border: none; font-size: 15px; padding: 2px 30px; cursor: pointer;">
+                    Back
+                </button>
+            </div>
+
+            <div class="order-row">
+                <label for="date-claim">Date & Time of Claiming:</label><br>
+                <input type="date" id="date-claim">
+                <input type="time" id="time-claim">
+            </div>
+            <div id="order-items" style="margin-top: 10px; min-height: 350px; max-height: 350px; overflow-y: auto; border: 1px solid #ccc; padding: 10px; text-align: left;">
+                <div id="cart-items" style="display: flex; flex-direction: column; gap: 10px;"></div>
+            </div>
+
+            <div class="order-row" style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px; margin-right:20px;">
+                <div>
+                    <label for="payment-mode"><strong>Mode of Payment:</strong></label>
+                    <select id="payment-mode">
+                        <option value="cash">Cash</option>
+                        <option value="gcash">G-Cash</option>
+                        <option value="bank">Bank Transfer</option>
+                        <option value="installment">Installment</option>
+                    </select>
+                </div>
+                <div>
+                    <strong>Total Order: ₱<span id="total-order">0.00</span></strong>
+                </div>
+            </div>
+            <div class="order-row" style="display: flex; justify-content: flex-end; margin-top: 10px;">
+                <button onclick="printReceipt()" style="background: black; color: white; border: none; font-size: 16px; padding: 10px 25px; cursor: pointer; border-radius: 5px; margin-right: 20px;">
+                    Print Receipt
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <div>ORDER SYSTEM</div>
+        <div id="date-time"></div>
+    </div>
+
+    <script>
+      // Logout function
+      function logout() {
+          // You can clear sessionStorage or localStorage if needed
+          sessionStorage.clear();
+          localStorage.clear();
+
+          // Redirect to index.html
+          window.location.href = 'index.html';
+      }
+
+      const uniforms = [
+          { name: "Women Blouse", stock: 100, price: 300, image: "women blouse.jpg", sizes: ["S", "M", "L", "XL"] },
+          { name: "Women Skirt", stock: 120, price: 350, image: "women skirt.jpg", sizes: ["S", "M", "L"] },
+          { name: "Women Pants", stock: 200, price: 400, image: "men pants.jpg", sizes: ["S", "M", "L", "XL"] },
+          { name: "PE Shirt", stock: 150, price: 250, image: "pe shirts.jpg", sizes: ["S", "M", "L"] },
+          { name: "PE Pants", stock: 180, price: 350, image: "pe pants.jpg", sizes: ["S", "M", "L", "XL"] },
+          { name: "Men Polo", stock: 220, price: 500, image: "men polo.jpg", sizes: ["M", "L", "XL"] },
+          { name: "Men Pants", stock: 190, price: 450, image: "men pants.jpg", sizes: ["M", "L", "XL"] },
+          { name: "Nstp Shirt", stock: 190, price: 450, image: "nstp shirt.png", sizes: ["M", "L", "XL"] }
+      ];
+
+      let cart = []; // Store selected uniforms and quantities
+
+      function showUniforms() {
+          const uniformsContainer = document.querySelector('.uniforms-container');
+          uniformsContainer.innerHTML = ''; // Clear any previous content
+
+          uniforms.forEach((uniform, index) => {
+              uniformsContainer.innerHTML += `
+                  <div class="uniform-item">
+                      <img src="${uniform.image}" alt="${uniform.name}" style="width: 150px; height: 200px; margin-bottom: 15px;">
+                      <h3 style="font-size: 17px;">${uniform.name}</h3>
+                      <p><strong>Stock:</strong> ${uniform.stock}</p>
+                      <p><strong>Price:</strong> ₱${uniform.price}</p>
+
+                      <!-- Size selection -->
+                      <div class="quantity-container">
+                          <label for="size-${index}"><strong>Size:</strong></label>
+                          <select id="size-${index}">
+                              ${uniform.sizes.map(size => `<option value="${size}">${size}</option>`).join('')}
+                          </select>
+                      </div>
+
+                      <!-- Quantity container -->
+                      <div class="quantity-container">
+                          <label for="quantity-${index}"><strong>Quantity:</strong></label>
+                          <input type="number" id="quantity-${index}" min="0" max="${uniform.stock}" value="0">
+                      </div>
+
+                      <!-- Container to position button on the right below the quantity -->
+                      <div class="quantity-btn-container">
+                          <button class="add-btn" onclick="addToCart(${index})">Add</button>
+                      </div>
+                  </div>
+              `;
+          });
+      }
+
+      function goBack() {
+	      // Redirect to main menu page
+	      window.location.href = 'main-menu.html';
+	  }
+
+
+      function addToCart(index) {
+          let uniform = uniforms[index];
+          let quantityInput = document.getElementById(`quantity-${index}`);
+          let sizeSelect = document.getElementById(`size-${index}`);
+          let quantity = parseInt(quantityInput.value);
+          let size = sizeSelect.value;
+
+          if (quantity <= 0) {
+              alert("Please add at least one item.");
+              return;
+          }
+
+          if (quantity > uniform.stock) {
+              alert("Not enough stock available!");
+              return;
+          }
+
+          let existingItem = cart.find(item => item.index === index && item.size === size);
+
+          if (existingItem) {
+              existingItem.quantity += quantity;
+          } else {
+              cart.push({ index: index, name: uniform.name, price: uniform.price, quantity: quantity, size: size });
+          }
+
+          updateCartUI();
+          updateTotalOrder();
+
+          quantityInput.value = 0;
+      }
+
+      function removeFromCart(index) {
+          let existingItem = cart.find(item => item.index === index);
+
+          if (existingItem) {
+              if (existingItem.quantity > 1) {
+                  existingItem.quantity--;
+              } else {
+                  cart = cart.filter(item => item.index !== index);
+              }
+          }
+
+          updateCartUI();
+          updateTotalOrder();
+      }
+
+           function updateCartUI() {
+		       let cartItemsContainer = document.getElementById("cart-items");
+		       cartItemsContainer.innerHTML = ""; // Clear previous items
+
+		       cart.forEach((item) => {
+		           let uniform = uniforms[item.index]; // Retrieve the uniform details using item.index
+
+		           let cartItem = document.createElement("div");
+		           cartItem.id = `cart-item-${item.index}`;
+		           cartItem.style.display = "flex";
+		           cartItem.style.alignItems = "center";
+		           cartItem.style.gap = "10px";
+
+		           cartItem.innerHTML = `
+		               <img src="${uniform.image}" alt="${uniform.name}" style="width: 90px; height: 110px;">
+		               <div style="display: flex; flex-direction: column; gap: 5px; align-items: flex-start;">
+		                   <span><strong>${uniform.name}</strong></span>
+		                   <span>Size: ${item.size}</span>  <!-- Display the size here -->
+		                   <span>Price: ₱${uniform.price}</span>
+		                   <div style="display: flex; align-items: center; gap: 10px; justify-content: flex-start; width: 100%;">
+		                       <span>Quantity: <span class="cart-quantity">${item.quantity}</span></span>
+		                       <button onclick="removeFromCart(${item.index})" style="color: gray; background: none; border: none; font-size: 16px; cursor: pointer;">✖</button>
+		                   </div>
+		               </div>
+		           `;
+
+		           cartItemsContainer.appendChild(cartItem);
+		       });
+		   }
+
+
+      function updateTotalOrder() {
+          let totalOrder = cart.reduce((total, item) => total + item.price * item.quantity, 0);
+          document.getElementById("total-order").innerText = totalOrder.toFixed(2);
+      }
+
+      function printReceipt() {
+	      if (cart.length === 0) {
+	          alert("Your cart is empty!");
+	          return;
+	      }
+
+	      // Store order data in sessionStorage
+	      sessionStorage.setItem("receiptCart", JSON.stringify(cart));
+	      sessionStorage.setItem("receiptTotal", cart.reduce((sum, item) => sum + item.price * item.quantity, 0).toFixed(2));
+
+	      sessionStorage.setItem("receiptStudentNumber", sessionStorage.getItem("studentNumber") || "______________________");
+	      sessionStorage.setItem("receiptStudentName", sessionStorage.getItem("studentName") || "______________________");
+
+	      const dateClaim = document.getElementById("date-claim")?.value || "______________________";
+	      const timeClaim = document.getElementById("time-claim")?.value || "______________________";
+
+	      sessionStorage.setItem("receiptDate", dateClaim);
+	      sessionStorage.setItem("receiptTime", timeClaim);
+
+	      // Open the separate receipt page
+	      window.open("uniform receipt.html", "_blank");
+	  }
+
+
+      document.addEventListener("DOMContentLoaded", function () {
+          showUniforms();
+      });
+  </script>
+
+
+
+</body>
+</html>

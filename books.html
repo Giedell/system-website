@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RTU Order System - Book Ordering</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Garet', Arial, sans-serif;
+            background: url('rtu.png') no-repeat center center fixed;
+            background-size: cover;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        .header, .footer {
+            background: rgba(255, 255, 0, 0.7);
+            padding: 15px;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+            height: 50px;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            height: 100%;
+        }
+
+        .logo {
+            height: 30px;
+            width: auto;
+            margin-right: 5px;
+        }
+
+        .logo-container span {
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .main-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            margin-top: 0px;
+        }
+
+        .main-menu-title {
+            color: white;
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 0px;
+            font-size: 32px;
+        }
+
+        .book-list {
+            margin-top: 0px;
+            margin-left: -615px;
+        }
+
+        .books-container {
+		    display: grid;
+		    grid-template-columns: repeat(3, 1fr);
+		    gap: 10px;
+		    padding: 5px 20px 20px 20px; /* Reduced top padding to 10px */
+		    justify-items: center;
+		    align-items: start;
+		    width: 100%;
+		    max-height: 600px;
+		    overflow-y: auto;
+		    scrollbar-width: thin;
+		    scrollbar-color: #888 #f1f1f1;
+		    margin-top: 0; /* Ensures no extra margin at the top */
+
+        }
+
+        .book-item {
+            border: 1px solid #ccc;
+            padding: 20px;
+            background: white;
+            text-align: center;
+            width: 270px;
+            height: 400px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .book-item img {
+            width: 170px;
+            height: 160px;
+            object-fit: cover;
+            margin-bottom: 15px;
+        }
+
+        .book-item h3 {
+            font-size: 12px;
+            font-weight: bold;
+            color: #333;
+            text-transform: uppercase;
+            text-align: center;
+        }
+
+        .book-item p, .quantity-container {
+            margin: 2px 0;
+            font-size: 14px;
+        }
+
+        .book-item input {
+            width: 60px;
+            text-align: center;
+            background-color: lightgray;
+            border: 1px solid black;
+            border-radius: 5px;
+            padding: 3px;
+        }
+
+        .quantity-btn-container {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            width: 100%;
+            margin-top: 5px;
+        }
+
+        .add-btn {
+            background: black;
+            color: white;
+            padding: 8px 30px;
+            font-size: 14px;
+            font-weight: bold;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        .order-summary {
+            position: fixed; /* Keeps it in place while scrolling */
+            right: 2px; /* Adjust position to the right */
+            top: 53%; /* Centers it vertically */
+            transform: translateY(-50%); /* Keeps it centered */
+            width: 600px;
+            height: 590px;
+            padding: 15px; /* Reduce padding to a reasonable size */
+            left: 905px;
+            background: white;
+            border: 2px solid lightgray;
+            border-radius: 10px;
+            box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3);
+            z-index: 1000; /* Ensures it stays on top */
+            margin: 0; /* REMOVE TOP MARGIN */
+        }
+
+        .order-row {
+            display: flex;
+            align-items: center; /* Aligns items vertically */
+            gap: 15px; /* Space between elements */
+            justify-content: flex-start; /* Aligns everything to the left */
+            margin-top: 10px;
+        }
+
+        .order-row label {
+            font-weight: bold;
+            white-space: nowrap;
+            margin-left: 20px;
+        }
+
+        .order-row input {
+            width: 25%; /* Ensures inputs are sized properly */
+            padding: 5px;
+            border: 2px solid gray;
+            border-radius: 5px;
+            font-size: 12px;
+
+        }
+
+        .footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            background: rgba(255, 255, 0, 0.7);
+            width: 100%;
+            height: 50px;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 16px;
+            font-weight: bold;
+            margin-top: 100px;
+        }
+
+        #date-time {
+            font-weight: bold;
+        }
+
+        .logout-btn {
+            background: none;
+            border: none;
+            color: black;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo-container">
+            <img src="Logo.jpg" style="mix-blend-mode: multiply;" alt="RTU Logo" class="logo">
+            <span>Rizal Technological University</span>
+        </div>
+        <button class="logout-btn" onclick="logout()">LOGOUT</button>
+    </div>
+
+    <div class="main-content">
+        <div class="main-menu-title">
+            BOOK ORDERING
+        </div>
+
+        <div class="container book-list">
+            <div class="books-container"></div>
+        </div>
+
+        <!-- Order Summary Section -->
+        <div class="order-summary">
+		    <div style="display: flex; justify-content: space-between; padding: 10px 10px;">
+		        <h2 style="margin: 0; font-size: 25px; color: black; padding: 10px;">
+		            ORDER SUMMARY
+		        </h2>
+		        <button onclick="goBack()" style="background: black; color: white; border: none; font-size: 15px; padding: 2px 30px; cursor: pointer;">
+		            Back
+		        </button>
+		    </div>
+
+            <div class="order-row">
+                <label for="date-claim">Date & Time of Claiming:</label><br>
+                <input type="date" id="date-claim">
+                <input type="time" id="time-claim">
+            </div>
+            <div id="order-items" style="margin-top: 10px; min-height: 350px; max-height: 350px; overflow-y: auto; border: 1px solid #ccc; padding: 10px; text-align: left;">
+			    <div id="cart-items" style="display: flex; flex-direction: column; gap: 10px;"></div>
+			</div>
+
+
+            <div class="order-row" style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px; margin-right:20px;">
+                <div>
+                    <label for="payment-mode"><strong>Mode of Payment:</strong></label>
+                    <select id="payment-mode">
+                        <option value="cash">Cash</option>
+                        <option value="gcash">G-Cash</option>
+                        <option value="bank">Bank Transfer</option>
+                        <option value="installment">Installment</option>
+                    </select>
+                </div>
+                <div>
+                    <strong>Total Order: ₱<span id="total-order">0.00</span></strong>
+                </div>
+            </div>
+            <div class="order-row" style="display: flex; justify-content: flex-end; margin-top: 10px;">
+    <button onclick="printReceipt()" style="background: black; color: white; border: none; font-size: 16px; padding: 10px 25px; cursor: pointer; border-radius: 5px; margin-right: 20px;">
+        Print Receipt
+    </button>
+</div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <div>ORDER SYSTEM</div>
+        <div id="date-time"></div>
+    </div>
+
+
+    <script>
+      // Logout function
+      function logout() {
+          // You can clear sessionStorage or localStorage if needed
+          sessionStorage.clear();
+          localStorage.clear();
+
+          // Redirect to index.html
+          window.location.href = 'index.html';
+      }
+      const books = [
+          { name: "Integral Calculus", stock: 210, price: 500, image: "Integ Cal.png" },
+		  	    { name: "The Calculus", stock: 348, price: 550, image: "Calculus.png" },
+		  	    { name: "Differential Calculus", stock: 348, price: 550, image: "DE.png" },
+		  	    { name: "Electrical Circuit", stock: 412, price: 600, image: "Electrical C 1.jpg" },
+		  	    { name: "Discrete Mathematics", stock: 435, price: 450, image: "Dm.jpg" },
+		  	    { name: "Physics for Engineers", stock: 257, price: 480, image: "Physics for Engineers.jpg" },
+		  	    { name: "Mathematics in the Modern World", stock: 515, price: 700, image: "Mmw.jpg" },
+		  	    { name: "Programming Logic and Design", stock: 529, price: 750, image: "Programming.jpg" },
+		  	    { name: "Understanding the Self", stock: 211, price: 800, image: "Uts.jpg" },
+		  	    { name: "Civil Welfare Training Service 1", stock: 346, price: 850, image: "Nstp 1.jpg" },
+		  	    { name: "Civil Welfare Training Service 2", stock: 410, price: 900, image: "Nstp 2.jpg" },
+		  	    { name: "Reading in Philippine History", stock: 213, price: 500, image: "Rph.jpg" },
+		  	    { name: "Purposive Commuincation", stock: 428, price: 550, image: "Purcom.jpg" },
+		  	    { name: "Science, Technology, and Society", stock: 646, price: 580, image: "Sts.jpg" },
+		  	    { name: "Introduction to Ethics", stock: 529, price: 600, image: "Ethics.jpg" },
+		  	    { name: "Physics for Engineers Laboratory", stock: 525, price: 620, image: "Physics Lab.jpg" },
+		  	    { name: "The Contemporary World", stock: 257, price: 580, image: "Tcw.jpg" },
+		  	    { name: "The Life and Works of Rizal", stock: 14, price: 750, image: "Life Works Rizal.jpg" },
+		  	    { name: "Engineering Mathematics Formula", stock: 210, price: 680, image: "Formula.jpg" }
+
+	];
+
+      let cart = []; // Store selected books and quantities
+
+      function showBooks() {
+          const booksContainer = document.querySelector('.books-container');
+          booksContainer.innerHTML = ''; // Clear any previous content
+
+          books.forEach((book, index) => {
+              booksContainer.innerHTML += `
+                  <div class="book-item">
+                      <img src="${book.image}" alt="${book.name}" style="width: 150px; height: 200px; margin-bottom: 15px;">
+                      <h3 style="font-size: 17px;">${book.name}</h3> <!-- Increased font size here -->
+                      <p><strong>Stock:</strong> ${book.stock}</p>
+                      <p><strong>Price:</strong> ₱${book.price}</p>
+
+                      <!-- Quantity container -->
+                      <div class="quantity-container">
+                          <label for="quantity-${index}"><strong>Quantity:</strong></label>
+                          <input type="number" id="quantity-${index}" min="0" max="${book.stock}" value="0">
+                      </div>
+
+                      <!-- Container to position button on the right below the quantity -->
+                      <div class="quantity-btn-container">
+                          <button class="add-btn" onclick="addToCart(${index})">Add</button>
+                      </div>
+                  </div>
+              `;
+          });
+      }
+
+      function goBack() {
+	  	      // Redirect to main menu page
+	  	      window.location.href = 'main-menu.html';
+	  }
+
+      function addToCart(index) {
+          let book = books[index];
+          let quantityInput = document.getElementById(`quantity-${index}`);
+          let quantity = parseInt(quantityInput.value);
+
+          if (quantity <= 0) {
+              alert("Please add at least one item.");
+              return;
+          }
+
+          if (quantity > book.stock) {
+              alert("Not enough stock available!");
+              return;
+          }
+
+          let existingItem = cart.find(item => item.index === index);
+
+          if (existingItem) {
+              existingItem.quantity += quantity;
+          } else {
+              cart.push({ index: index, name: book.name, price: book.price, quantity: quantity });
+          }
+
+          updateCartUI();
+          updateTotalOrder(); // ✅ Call this function to update the total
+
+          // Reset input field to 0 after adding to cart
+          quantityInput.value = 0;
+      }
+
+      function removeFromCart(index) {
+          let existingItem = cart.find(item => item.index === index);
+
+          if (existingItem) {
+              if (existingItem.quantity > 1) {
+                  existingItem.quantity--;
+              } else {
+                  cart = cart.filter(item => item.index !== index);
+              }
+          }
+
+          updateCartUI();
+          updateTotalOrder();
+      }
+
+      function updateCartUI() {
+          let cartItemsContainer = document.getElementById("cart-items");
+          cartItemsContainer.innerHTML = ""; // Clear previous items
+
+          cart.forEach((item) => {
+              let book = books[item.index]; // Retrieve the book details using item.index
+
+              let cartItem = document.createElement("div");
+              cartItem.id = `cart-item-${item.index}`;
+              cartItem.style.display = "flex";
+              cartItem.style.alignItems = "center";
+              cartItem.style.gap = "10px";
+
+              cartItem.innerHTML = `
+                  <img src="${book.image}" alt="${book.name}" style="width: 90px; height: 110px;">
+                  <div style="display: flex; flex-direction: column; gap: 5px; align-items: flex-start;">
+                      <span><strong>${book.name}</strong></span>
+                      <span>Price: ₱${book.price}</span>
+                      <div style="display: flex; align-items: center; gap: 10px; justify-content: flex-start; width: 100%;">
+                          <span>Quantity: <span class="cart-quantity">${item.quantity}</span></span>
+                          <button onclick="removeFromCart(${item.index})" style="color: gray; background: none; border: none; font-size: 16px; cursor: pointer;">✖</button>
+                      </div>
+                  </div>
+              `;
+
+              cartItemsContainer.appendChild(cartItem);
+          });
+      }
+
+      function updateTotalOrder() {
+	      let total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+	      document.getElementById("total-order").textContent = total.toFixed(2);
+	  }
+
+      function printReceipt() {
+	  	      if (cart.length === 0) {
+	  	          alert("Your cart is empty!");
+	  	          return;
+	  	      }
+
+	  	      // Store order data in sessionStorage
+	  	      sessionStorage.setItem("receiptCart", JSON.stringify(cart));
+	  	      sessionStorage.setItem("receiptTotal", cart.reduce((sum, item) => sum + item.price * item.quantity, 0).toFixed(2));
+
+	  	      sessionStorage.setItem("receiptStudentNumber", sessionStorage.getItem("studentNumber") || "______________________");
+	  	      sessionStorage.setItem("receiptStudentName", sessionStorage.getItem("studentName") || "______________________");
+
+	  	      const dateClaim = document.getElementById("date-claim")?.value || "______________________";
+	  	      const timeClaim = document.getElementById("time-claim")?.value || "______________________";
+
+	  	      sessionStorage.setItem("receiptDate", dateClaim);
+	  	      sessionStorage.setItem("receiptTime", timeClaim);
+
+	  	      // Open the separate receipt page
+	  	      window.open("book receipt.html", "_blank");
+	  	  }
+
+
+	        document.addEventListener("DOMContentLoaded", function () {
+	            showBooks();
+	        });
+	    </script>
+
+
+
+	  </body>
+	  </html>
+

@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Book Orders History</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Garet', Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh; /* Ensure the body takes at least full height */
+      background: #f4f4f4;
+    }
+
+    .header, .footer {
+      background: rgba(255, 255, 0, 0.7);
+      padding: 15px;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: bold;
+      height: 50px;
+    }
+
+    .logo-container {
+      display: flex;
+      align-items: center;
+    }
+
+    .logo {
+      height: 30px;
+      width: auto;
+      margin-right: 5px;
+    }
+
+    .logo-container span {
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    .main-content {
+      flex-grow: 1; /* Ensures the content area expands to take available space */
+      padding: 20px;
+    }
+
+    h2 {
+      text-align: center; /* Center the title horizontally */
+      margin-bottom: 20px;
+      color: #ff6f00; /* Orange color for heading */
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 30px;
+      background: #fff;
+      box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    th, td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #ff6f00; /* Orange color */
+      color: white; /* White text for headers */
+    }
+
+    td {
+      color: #333; /* Darker text color for table content */
+    }
+
+    .remove-btn {
+      background-color: #f44336;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      cursor: pointer;
+    }
+
+    .remove-btn:hover {
+      background-color: #d32f2f;
+    }
+
+    #date-time {
+      font-weight: bold;
+    }
+
+    .back-btn {
+      background: none;
+      border: none;
+      color: black;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="logo-container">
+      <img src="Logo.jpg" alt="RTU Logo" class="logo">
+      <span>Rizal Technological University</span>
+    </div>
+    <button class="back-btn" onclick="goBack()">BACK</button> <!-- Back button -->
+  </div>
+
+  <div class="main-content">
+    <h2>Book Order History</h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Student Number</th>
+          <th>Student Name</th>
+          <th>Claiming Date</th>
+          <th>Claiming Time</th>
+          <th>Order Details</th>
+          <th>Total</th>
+          <th>Action</th> <!-- Column for remove button -->
+        </tr>
+      </thead>
+      <tbody id="orderHistoryTable"></tbody>
+    </table>
+  </div>
+
+  <div class="footer">
+    <div>ORDER SYSTEM</div>
+    <div id="date-time"></div>
+  </div>
+
+  <script>
+    function loadOrders() {
+      const orders = JSON.parse(localStorage.getItem("bookOrders")) || [];
+      const table = document.getElementById("orderHistoryTable");
+      table.innerHTML = ""; // Clear existing rows
+
+      orders.forEach((order, index) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${order.studentNumber}</td>
+          <td>${order.studentName}</td>
+          <td>${order.dateClaim}</td>
+          <td>${order.timeClaim}</td>
+          <td>${order.orderDetails}</td>
+          <td>₱${order.total}</td>
+          <td><button class="remove-btn" onclick="removeOrder(${index})">Remove</button></td> <!-- Remove button -->
+        `;
+        table.appendChild(row);
+      });
+    }
+
+    function removeOrder(index) {
+      const orders = JSON.parse(localStorage.getItem("bookOrders")) || [];
+      orders.splice(index, 1); // Remove the order at the specified index
+      localStorage.setItem("bookOrders", JSON.stringify(orders)); // Save updated list
+      loadOrders(); // Reload the orders after removal
+    }
+
+    window.onload = function() {
+      loadOrders();
+      updateDateTime();
+      setInterval(updateDateTime, 1000);
+    };
+
+    function updateDateTime() {
+      var now = new Date();
+      var date = (now.getMonth() + 1) + '/' + now.getDate() + '/' + now.getFullYear();
+      var hours = now.getHours();
+      var minutes = now.getMinutes();
+      var ampm = hours >= 12 ? 'PM' : 'AM';
+      hours = hours % 12;
+      hours = hours ? hours : 12;
+      minutes = minutes < 10 ? '0' + minutes : minutes;
+      var time = hours + ':' + minutes + ' ' + ampm;
+      document.getElementById('date-time').innerHTML = date + ' | ' + time;
+    }
+
+    function goBack() {
+      window.location.href = 'admin main-menu.html'; // Redirect to the admin main menu
+    }
+  </script>
+
+</body>
+</html>

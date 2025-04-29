@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Uniform Orders History</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Garet', Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      background: #f4f4f4;
+    }
+
+    .header, .footer {
+      background: rgba(255, 255, 0, 0.7);
+      padding: 15px;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: bold;
+      height: 50px;
+    }
+
+    .logo-container {
+      display: flex;
+      align-items: center;
+    }
+
+    .logo {
+      height: 30px;
+      width: auto;
+      margin-right: 5px;
+    }
+
+    .logo-container span {
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    .main-content {
+      flex-grow: 1; /* Ensures the content area expands to take available space */
+      padding: 20px;
+    }
+
+    h2 {
+      text-align: center; /* Center the title horizontally */
+      margin-bottom: 20px;
+      color: #ff6f00; /* Orange color for heading */
+    }
+
+    table {
+      width: 100%; /* Set table width to 100% to match the Book Orders page */
+      border-collapse: collapse;
+      margin-bottom: 30px;
+      background: #fff;
+      box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    th, td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #ff6f00; /* Orange color */
+      color: white; /* White text */
+    }
+
+    td {
+      color: #333; /* Darker color for the text in the table */
+    }
+
+    .remove-btn {
+      background-color: #f44336;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      cursor: pointer;
+    }
+
+    .remove-btn:hover {
+      background-color: #d32f2f;
+    }
+
+    #date-time {
+      font-weight: bold;
+    }
+
+    .back-btn {
+      background: none;
+      border: none;
+      color: black;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    .footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      font-size: 16px;
+    }
+
+    .footer div {
+      padding: 10px;
+    }
+
+    .main-content {
+      padding-top: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="logo-container">
+      <img src="Logo.jpg" alt="RTU Logo" class="logo">
+      <span>Rizal Technological University</span>
+    </div>
+    <button class="back-btn" onclick="goBack()">BACK</button> <!-- Back button -->
+  </div>
+
+  <div class="main-content">
+    <h2>Uniform Order History</h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Student Number</th>
+          <th>Student Name</th>
+          <th>Claiming Date</th>
+          <th>Claiming Time</th>
+          <th>Order Details</th>
+          <th>Total</th>
+          <th>Action</th> <!-- Column for remove button -->
+        </tr>
+      </thead>
+      <tbody id="orderHistoryTable"></tbody>
+    </table>
+  </div>
+
+  <div class="footer">
+    <div>ORDER SYSTEM</div>
+    <div id="date-time"></div>
+  </div>
+
+  <script>
+    // Load order history from localStorage
+    function loadOrders() {
+      const orders = JSON.parse(localStorage.getItem("uniformOrders")) || [];
+      const table = document.getElementById("orderHistoryTable");
+      table.innerHTML = ""; // Clear the table before adding new rows
+
+      orders.forEach((order, index) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${order.studentNumber}</td>
+          <td>${order.studentName}</td>
+          <td>${order.dateClaim}</td>
+          <td>${order.timeClaim}</td>
+          <td>${order.orderDetails}</td>
+          <td>₱${order.total}</td>
+          <td><button class="remove-btn" onclick="removeOrder(${index})">Remove</button></td> <!-- Remove button -->
+        `;
+        table.appendChild(row);
+      });
+    }
+
+    // Remove an order from localStorage
+    function removeOrder(index) {
+      const orders = JSON.parse(localStorage.getItem("uniformOrders")) || [];
+      orders.splice(index, 1); // Remove the order at the specified index
+      localStorage.setItem("uniformOrders", JSON.stringify(orders)); // Save updated list
+      loadOrders(); // Reload the orders after removal
+    }
+
+    // Update the date and time in the footer
+    function updateDateTime() {
+      var now = new Date();
+      var date = (now.getMonth() + 1) + '/' + now.getDate() + '/' + now.getFullYear();
+      var hours = now.getHours();
+      var minutes = now.getMinutes();
+      var ampm = hours >= 12 ? 'PM' : 'AM';
+      hours = hours % 12;
+      hours = hours ? hours : 12;
+      minutes = minutes < 10 ? '0' + minutes : minutes;
+      var time = hours + ':' + minutes + ' ' + ampm;
+      document.getElementById('date-time').innerHTML = date + ' | ' + time;
+    }
+
+    // Redirect to the admin main menu page when the back button is clicked
+    function goBack() {
+      window.location.href = 'admin main-menu.html'; // Redirect to the admin main menu
+    }
+
+    // Initialize the orders and date/time when the page loads
+    window.onload = function() {
+      loadOrders();
+      updateDateTime();
+      setInterval(updateDateTime, 1000);
+    };
+  </script>
+
+</body>
+</html>
